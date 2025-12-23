@@ -20,7 +20,7 @@ public class Patient
 
     [Required]
     [Unique]
-    [Column("oib", SqlDataType.Char)]
+    [Column("oib", SqlDataType.Char, 11)]
     public string Oib { get; set; } = string.Empty;
 
     [Required]
