@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11312.210 d18.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ormlib", "ormlib\ormlib.csproj", "{A4E5F6AA-5A76-4EF9-B5EA-9A6D00D532DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbApp", "DbApp\DbApp.csproj", "{6F47B35E-F09C-4852-87EA-A22057C782D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dbtesting", "dbtesting\dbtesting.csproj", "{3044FA23-1FED-49F1-940E-A158AD16A489}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4E5F6AA-5A76-4EF9-B5EA-9A6D00D532DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4E5F6AA-5A76-4EF9-B5EA-9A6D00D532DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4E5F6AA-5A76-4EF9-B5EA-9A6D00D532DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4E5F6AA-5A76-4EF9-B5EA-9A6D00D532DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F47B35E-F09C-4852-87EA-A22057C782D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F47B35E-F09C-4852-87EA-A22057C782D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F47B35E-F09C-4852-87EA-A22057C782D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F47B35E-F09C-4852-87EA-A22057C782D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3044FA23-1FED-49F1-940E-A158AD16A489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3044FA23-1FED-49F1-940E-A158AD16A489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3044FA23-1FED-49F1-940E-A158AD16A489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3044FA23-1FED-49F1-940E-A158AD16A489}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B3B21E4E-93B0-491C-89B7-D8DA571E3D4C}
+	EndGlobalSection
+EndGlobal
