@@ -38,12 +38,11 @@ public static class InsertSqlBuilder
 
         sql.Append(") VALUES (");
 
-        // Use parameterized queries - Npgsql supports both $1, $2... and ? placeholders
-        // We'll use $1, $2... for PostgreSQL compatibility
+        // Use parameterized queries with @p1, @p2... format for Npgsql compatibility
         var parameters = new List<string>();
         for (int i = 0; i < columnsToInsert.Count; i++)
         {
-            parameters.Add($"${i + 1}");
+            parameters.Add($"@p{i + 1}");
         }
 
         sql.Append(string.Join(", ", parameters));

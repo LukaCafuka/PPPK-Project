@@ -224,9 +224,12 @@ public static class MetadataExtractor
     private static bool IsNavigationProperty(PropertyInfo property)
     {
         var propertyType = property.PropertyType;
+        
+        // Handle nullable types
+        var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
         // Skip if it's a primitive type, string, or value type
-        if (propertyType.IsPrimitive || propertyType == typeof(string) || propertyType.IsValueType)
+        if (underlyingType.IsPrimitive || underlyingType == typeof(string) || underlyingType.IsValueType)
             return false;
 
         // Check if it's a collection type
@@ -248,8 +251,15 @@ public static class MetadataExtractor
             return true;
         }
 
-        // If it's a class type (and not a known primitive wrapper), it might be a navigation property
-        // But we'll be conservative - only treat it as navigation if it's not a simple type
+        // If it's a class type and doesn't have a Column attribute, treat it as a navigation property
+        // Navigation properties are entity types that shouldn't be mapped as columns
+        if (underlyingType.IsClass && underlyingType != typeof(string))
+        {
+            // If it has a Column attribute, it's explicitly mapped, so it's not a navigation property
+            var hasColumnAttribute = property.GetCustomAttribute<ColumnAttribute>() != null;
+            return !hasColumnAttribute;
+        }
+
         return false;
     }
 

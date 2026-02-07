@@ -58,5 +58,18 @@ public sealed class ColumnAttribute : Attribute
         Name = name;
         DataType = dataType;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColumnAttribute"/> class with the specified column name, data type, and length.
+    /// </summary>
+    /// <param name="name">The name of the database column.</param>
+    /// <param name="dataType">The SQL data type for the column.</param>
+    /// <param name="length">The length/precision for VARCHAR or CHAR types.</param>
+    public ColumnAttribute(string name, SqlDataType dataType, int length)
+    {
+        Name = name;
+        DataType = dataType;
+        Length = length;
+    }
 }
 

@@ -58,7 +58,7 @@ public static class SelectSqlBuilder
         if (tableMetadata == null)
             throw new ArgumentNullException(nameof(tableMetadata));
 
-        var whereClause = $"\"{tableMetadata.PrimaryKey.ColumnName}\" = $1";
+        var whereClause = $"\"{tableMetadata.PrimaryKey.ColumnName}\" = @p1";
         return BuildSelect(tableMetadata, whereClause);
     }
 

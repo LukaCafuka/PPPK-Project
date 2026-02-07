@@ -20,7 +20,7 @@ public static class DeleteSqlBuilder
 
         var sql = new StringBuilder();
         sql.Append($"DELETE FROM \"{tableMetadata.TableName}\"");
-        sql.Append($" WHERE \"{tableMetadata.PrimaryKey.ColumnName}\" = $1");
+        sql.Append($" WHERE \"{tableMetadata.PrimaryKey.ColumnName}\" = @p1");
 
         return sql.ToString();
     }

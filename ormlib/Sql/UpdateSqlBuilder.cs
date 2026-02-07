@@ -45,13 +45,13 @@ public static class UpdateSqlBuilder
         var setClauses = new List<string>();
         for (int i = 0; i < columnsToUpdate.Count; i++)
         {
-            setClauses.Add($"\"{columnsToUpdate[i].ColumnName}\" = ${i + 1}");
+            setClauses.Add($"\"{columnsToUpdate[i].ColumnName}\" = @p{i + 1}");
         }
 
         sql.Append(string.Join(", ", setClauses));
 
         // Add WHERE clause for primary key
-        sql.Append($" WHERE \"{tableMetadata.PrimaryKey.ColumnName}\" = ${columnsToUpdate.Count + 1}");
+        sql.Append($" WHERE \"{tableMetadata.PrimaryKey.ColumnName}\" = @p{columnsToUpdate.Count + 1}");
 
         return (sql.ToString(), columnsToUpdate);
     }

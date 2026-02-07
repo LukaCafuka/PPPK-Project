@@ -2,6 +2,7 @@
 using Dbtesting.Models;
 using Npgsql;
 using OrmLib.Metadata;
+using OrmLib.Migrations;
 using OrmLib.Sql;
 
 // Connection string
@@ -43,6 +44,21 @@ try
         case "metadata":
             ShowMetadata();
             break;
+        case "migration-generate":
+            await GenerateMigrationAsync();
+            break;
+        case "migration-apply":
+            await ApplyMigrationAsync();
+            break;
+        case "migration-rollback":
+            await RollbackMigrationAsync(args);
+            break;
+        case "migration-list":
+            await ListMigrationsAsync();
+            break;
+        case "migration-status":
+            await ShowMigrationStatusAsync();
+            break;
         default:
             Console.WriteLine($"ERROR: Unknown command: {command}");
             PrintUsage();
@@ -83,6 +99,13 @@ static void PrintUsage()
     Console.WriteLine("                            Example: update 1 first_name Jane");
     Console.WriteLine("  delete <id>               Delete a patient by ID");
     Console.WriteLine("  metadata                  Show table metadata");
+    Console.WriteLine();
+    Console.WriteLine("Migration Commands:");
+    Console.WriteLine("  migration-generate        Generate migration from schema differences");
+    Console.WriteLine("  migration-apply           Apply the latest generated migration");
+    Console.WriteLine("  migration-rollback <id>   Rollback a specific migration");
+    Console.WriteLine("  migration-list            List all applied migrations");
+    Console.WriteLine("  migration-status          Show migration status and pending changes");
     Console.WriteLine();
 }
 
@@ -159,6 +182,7 @@ static async Task InsertPatientAsync(string[] args)
     
     using var context = new TestContext(connectionString);
     context.Patients.Add(patient);
+    context.SaveChanges();
     
     Console.WriteLine($"SUCCESS: Patient inserted successfully! ID: {patient.Id}");
 }
@@ -270,8 +294,9 @@ static async Task UpdatePatientAsync(string[] args)
     
     column.SetValue(patient, convertedValue);
     
-    // Update
-    context.Patients.Update(patient, new[] { column });
+    // Update using change tracking
+    context.Patients.Update(patient);
+    context.SaveChanges();
     
     Console.WriteLine($"SUCCESS: Patient updated successfully!");
     PrintPatient(patient);
@@ -298,6 +323,7 @@ static async Task DeletePatientAsync(string[] args)
     }
     
     context.Patients.Remove(id);
+    context.SaveChanges();
     Console.WriteLine("SUCCESS: Patient deleted successfully!");
 }
 
@@ -355,4 +381,212 @@ static void PrintPatient(Patient patient)
         Console.WriteLine($"Residence Address: {patient.ResidenceAddress}");
     if (!string.IsNullOrEmpty(patient.PermanentAddress))
         Console.WriteLine($"Permanent Address: {patient.PermanentAddress}");
+}
+
+static async Task GenerateMigrationAsync()
+{
+    Console.WriteLine("Generating Migration");
+    Console.WriteLine("===================");
+    Console.WriteLine();
+    Console.WriteLine("Comparing current database schema with entity metadata...");
+    Console.WriteLine();
+    
+    using var context = new TestContext(connectionString);
+    var migration = context.GenerateMigration();
+    
+    if (migration == null)
+    {
+        Console.WriteLine("SUCCESS: No changes detected. Database schema matches entity metadata.");
+        return;
+    }
+    
+    Console.WriteLine($"Migration ID: {migration.Id}");
+    Console.WriteLine($"Migration Name: {migration.Name}");
+    Console.WriteLine();
+    
+    Console.WriteLine("Forward Migration (Up) Statements:");
+    Console.WriteLine("----------------------------------");
+    for (int i = 0; i < migration.UpStatements.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {migration.UpStatements[i]}");
+    }
+    
+    Console.WriteLine();
+    Console.WriteLine("Backward Migration (Down) Statements:");
+    Console.WriteLine("-------------------------------------");
+    for (int i = 0; i < migration.DownStatements.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {migration.DownStatements[i]}");
+    }
+    
+    Console.WriteLine();
+    Console.WriteLine("NOTE: Migration has been generated but not applied.");
+    Console.WriteLine("      Use 'migration-apply' to apply this migration.");
+}
+
+static async Task ApplyMigrationAsync()
+{
+    Console.WriteLine("Applying Migration");
+    Console.WriteLine("==================");
+    Console.WriteLine();
+    
+    using var context = new TestContext(connectionString);
+    
+    // Generate migration first
+    var migration = context.GenerateMigration();
+    
+    if (migration == null)
+    {
+        Console.WriteLine("SUCCESS: No changes detected. Database is up to date.");
+        return;
+    }
+    
+    Console.WriteLine($"Applying migration: {migration.Name} (ID: {migration.Id})");
+    Console.WriteLine();
+    
+    try
+    {
+        context.Migrations.ExecuteUp(migration);
+        Console.WriteLine("SUCCESS: Migration applied successfully!");
+        Console.WriteLine();
+        Console.WriteLine("Applied statements:");
+        foreach (var statement in migration.UpStatements)
+        {
+            if (!string.IsNullOrWhiteSpace(statement) && !statement.TrimStart().StartsWith("--"))
+            {
+                Console.WriteLine($"  ✓ {statement}");
+            }
+        }
+    }
+    catch (InvalidOperationException ex)
+    {
+        Console.WriteLine($"ERROR: {ex.Message}");
+    }
+}
+
+static async Task RollbackMigrationAsync(string[] args)
+{
+    if (args.Length < 2)
+    {
+        Console.WriteLine("ERROR: Usage: migration-rollback <migration-id>");
+        Console.WriteLine("   Example: migration-rollback 20240101120000");
+        return;
+    }
+    
+    var migrationId = args[1];
+    
+    Console.WriteLine($"Rolling Back Migration");
+    Console.WriteLine("======================");
+    Console.WriteLine($"Migration ID: {migrationId}");
+    Console.WriteLine();
+    
+    using var context = new TestContext(connectionString);
+    
+    // Check if migration is applied
+    if (!context.Migrations.IsMigrationApplied(migrationId))
+    {
+        Console.WriteLine($"ERROR: Migration {migrationId} has not been applied.");
+        return;
+    }
+    
+    // Generate migration to get the rollback statements
+    // Note: In a real implementation, you'd load the migration from storage
+    // For now, we'll generate it and use the down statements
+    var migration = context.GenerateMigration();
+    
+    if (migration == null || migration.Id != migrationId)
+    {
+        Console.WriteLine($"ERROR: Cannot find migration {migrationId} to rollback.");
+        Console.WriteLine("NOTE: In a production system, migrations are stored and can be loaded by ID.");
+        return;
+    }
+    
+    try
+    {
+        context.Migrations.ExecuteDown(migration);
+        Console.WriteLine("SUCCESS: Migration rolled back successfully!");
+        Console.WriteLine();
+        Console.WriteLine("Rolled back statements:");
+        foreach (var statement in migration.DownStatements)
+        {
+            if (!string.IsNullOrWhiteSpace(statement) && !statement.TrimStart().StartsWith("--"))
+            {
+                Console.WriteLine($"  ✓ {statement}");
+            }
+        }
+    }
+    catch (InvalidOperationException ex)
+    {
+        Console.WriteLine($"ERROR: {ex.Message}");
+    }
+}
+
+static async Task ListMigrationsAsync()
+{
+    Console.WriteLine("Applied Migrations");
+    Console.WriteLine("==================");
+    Console.WriteLine();
+    
+    using var context = new TestContext(connectionString);
+    var appliedMigrations = context.Migrations.GetAppliedMigrations();
+    
+    if (appliedMigrations.Count == 0)
+    {
+        Console.WriteLine("No migrations have been applied yet.");
+        return;
+    }
+    
+    Console.WriteLine($"Total applied migrations: {appliedMigrations.Count}");
+    Console.WriteLine();
+    
+    foreach (var migrationId in appliedMigrations)
+    {
+        Console.WriteLine($"  • {migrationId}");
+    }
+}
+
+static async Task ShowMigrationStatusAsync()
+{
+    Console.WriteLine("Migration Status");
+    Console.WriteLine("================");
+    Console.WriteLine();
+    
+    using var context = new TestContext(connectionString);
+    
+    // Get applied migrations
+    var appliedMigrations = context.Migrations.GetAppliedMigrations();
+    Console.WriteLine($"Applied Migrations: {appliedMigrations.Count}");
+    
+    if (appliedMigrations.Count > 0)
+    {
+        Console.WriteLine("  Latest: " + appliedMigrations.LastOrDefault() ?? "None");
+    }
+    
+    Console.WriteLine();
+    
+    // Check for pending changes
+    var migration = context.GenerateMigration();
+    
+    if (migration == null)
+    {
+        Console.WriteLine("SUCCESS: Database schema is up to date with entity metadata.");
+        Console.WriteLine("         No pending migrations.");
+    }
+    else
+    {
+        Console.WriteLine("WARNING: Pending migration detected!");
+        Console.WriteLine($"         Migration ID: {migration.Id}");
+        Console.WriteLine($"         Migration Name: {migration.Name}");
+        Console.WriteLine();
+        Console.WriteLine("Pending changes:");
+        foreach (var statement in migration.UpStatements)
+        {
+            if (!string.IsNullOrWhiteSpace(statement) && !statement.TrimStart().StartsWith("--"))
+            {
+                Console.WriteLine($"  • {statement}");
+            }
+        }
+        Console.WriteLine();
+        Console.WriteLine("Use 'migration-apply' to apply these changes.");
+    }
 }

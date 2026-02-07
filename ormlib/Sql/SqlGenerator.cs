@@ -70,14 +70,9 @@ public static class SqlGenerator
         // Add constraints
         var constraints = new List<string>();
 
-        if (column.IsPrimaryKey && column.IsAutoIncrement)
+        if (column.IsPrimaryKey)
         {
-            // PostgreSQL uses SERIAL or BIGSERIAL for auto-increment
-            // The data type is already set above, so we don't add PRIMARY KEY here
-            // SERIAL/BIGSERIAL already implies PRIMARY KEY behavior
-        }
-        else if (column.IsPrimaryKey)
-        {
+            // Add PRIMARY KEY constraint (needed even for BIGSERIAL)
             constraints.Add("PRIMARY KEY");
         }
 
