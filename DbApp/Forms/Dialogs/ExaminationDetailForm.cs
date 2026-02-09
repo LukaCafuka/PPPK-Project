@@ -82,6 +82,7 @@ public partial class ExaminationDetailForm : Form
         dtpScheduledDate.ShowUpDown = true;
         dtpScheduledDate.Size = new Size(300, 27);
         dtpScheduledDate.TabIndex = 7;
+        dtpScheduledDate.ValueChanged += dtpScheduledDate_ValueChanged;
         // 
         // txtStatus
         // 
@@ -317,6 +318,11 @@ public partial class ExaminationDetailForm : Form
     {
         DialogResult = DialogResult.Cancel;
         Close();
+    }
+
+    private void dtpScheduledDate_ValueChanged(object sender, EventArgs e)
+    {
+
     }
 }
 
