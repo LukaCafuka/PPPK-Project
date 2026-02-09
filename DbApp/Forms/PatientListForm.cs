@@ -23,112 +23,113 @@ public partial class PatientListForm : UserControl
 
     private void InitializeComponent()
     {
-        this.dataGridViewPatients = new DataGridView();
-        this.btnAdd = new Button();
-        this.btnEdit = new Button();
-        this.btnDelete = new Button();
-        this.btnViewDetails = new Button();
-        this.txtSearch = new TextBox();
-        this.btnSearch = new Button();
-        this.lblSearch = new Label();
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPatients)).BeginInit();
-        this.SuspendLayout();
-        // 
-        // lblSearch
-        // 
-        this.lblSearch.AutoSize = true;
-        this.lblSearch.Location = new Point(12, 15);
-        this.lblSearch.Name = "lblSearch";
-        this.lblSearch.Size = new Size(45, 15);
-        this.lblSearch.TabIndex = 0;
-        this.lblSearch.Text = "Search:";
-        // 
-        // txtSearch
-        // 
-        this.txtSearch.Location = new Point(63, 12);
-        this.txtSearch.Name = "txtSearch";
-        this.txtSearch.Size = new Size(300, 23);
-        this.txtSearch.TabIndex = 1;
-        // 
-        // btnSearch
-        // 
-        this.btnSearch.Location = new Point(369, 12);
-        this.btnSearch.Name = "btnSearch";
-        this.btnSearch.Size = new Size(75, 23);
-        this.btnSearch.TabIndex = 2;
-        this.btnSearch.Text = "Search";
-        this.btnSearch.UseVisualStyleBackColor = true;
-        this.btnSearch.Click += BtnSearch_Click;
-        // 
-        // btnAdd
-        // 
-        this.btnAdd.Location = new Point(12, 50);
-        this.btnAdd.Name = "btnAdd";
-        this.btnAdd.Size = new Size(100, 30);
-        this.btnAdd.TabIndex = 3;
-        this.btnAdd.Text = "Add Patient";
-        this.btnAdd.UseVisualStyleBackColor = true;
-        this.btnAdd.Click += BtnAdd_Click;
-        // 
-        // btnEdit
-        // 
-        this.btnEdit.Location = new Point(118, 50);
-        this.btnEdit.Name = "btnEdit";
-        this.btnEdit.Size = new Size(100, 30);
-        this.btnEdit.TabIndex = 4;
-        this.btnEdit.Text = "Edit";
-        this.btnEdit.UseVisualStyleBackColor = true;
-        this.btnEdit.Click += BtnEdit_Click;
-        // 
-        // btnDelete
-        // 
-        this.btnDelete.Location = new Point(224, 50);
-        this.btnDelete.Name = "btnDelete";
-        this.btnDelete.Size = new Size(100, 30);
-        this.btnDelete.TabIndex = 5;
-        this.btnDelete.Text = "Delete";
-        this.btnDelete.UseVisualStyleBackColor = true;
-        this.btnDelete.Click += BtnDelete_Click;
-        // 
-        // btnViewDetails
-        // 
-        this.btnViewDetails.Location = new Point(330, 50);
-        this.btnViewDetails.Name = "btnViewDetails";
-        this.btnViewDetails.Size = new Size(100, 30);
-        this.btnViewDetails.TabIndex = 6;
-        this.btnViewDetails.Text = "View Details";
-        this.btnViewDetails.UseVisualStyleBackColor = true;
-        this.btnViewDetails.Click += BtnViewDetails_Click;
+        dataGridViewPatients = new DataGridView();
+        btnAdd = new Button();
+        btnEdit = new Button();
+        btnDelete = new Button();
+        btnViewDetails = new Button();
+        txtSearch = new TextBox();
+        btnSearch = new Button();
+        lblSearch = new Label();
+        ((System.ComponentModel.ISupportInitialize)dataGridViewPatients).BeginInit();
+        SuspendLayout();
         // 
         // dataGridViewPatients
         // 
-        this.dataGridViewPatients.AllowUserToAddRows = false;
-        this.dataGridViewPatients.AllowUserToDeleteRows = false;
-        this.dataGridViewPatients.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.dataGridViewPatients.Location = new Point(12, 90);
-        this.dataGridViewPatients.Name = "dataGridViewPatients";
-        this.dataGridViewPatients.ReadOnly = true;
-        this.dataGridViewPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        this.dataGridViewPatients.Size = new Size(1176, 564);
-        this.dataGridViewPatients.TabIndex = 7;
-        this.dataGridViewPatients.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        this.dataGridViewPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        dataGridViewPatients.AllowUserToAddRows = false;
+        dataGridViewPatients.AllowUserToDeleteRows = false;
+        dataGridViewPatients.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        dataGridViewPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        dataGridViewPatients.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        dataGridViewPatients.Location = new Point(12, 90);
+        dataGridViewPatients.Name = "dataGridViewPatients";
+        dataGridViewPatients.ReadOnly = true;
+        dataGridViewPatients.RowHeadersWidth = 51;
+        dataGridViewPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        dataGridViewPatients.Size = new Size(1176, 564);
+        dataGridViewPatients.TabIndex = 7;
+        // 
+        // btnAdd
+        // 
+        btnAdd.Location = new Point(12, 50);
+        btnAdd.Name = "btnAdd";
+        btnAdd.Size = new Size(100, 30);
+        btnAdd.TabIndex = 3;
+        btnAdd.Text = "Add Patient";
+        btnAdd.UseVisualStyleBackColor = true;
+        btnAdd.Click += BtnAdd_Click;
+        // 
+        // btnEdit
+        // 
+        btnEdit.Location = new Point(118, 50);
+        btnEdit.Name = "btnEdit";
+        btnEdit.Size = new Size(100, 30);
+        btnEdit.TabIndex = 4;
+        btnEdit.Text = "Edit";
+        btnEdit.UseVisualStyleBackColor = true;
+        btnEdit.Click += BtnEdit_Click;
+        // 
+        // btnDelete
+        // 
+        btnDelete.Location = new Point(224, 50);
+        btnDelete.Name = "btnDelete";
+        btnDelete.Size = new Size(100, 30);
+        btnDelete.TabIndex = 5;
+        btnDelete.Text = "Delete";
+        btnDelete.UseVisualStyleBackColor = true;
+        btnDelete.Click += BtnDelete_Click;
+        // 
+        // btnViewDetails
+        // 
+        btnViewDetails.Location = new Point(330, 50);
+        btnViewDetails.Name = "btnViewDetails";
+        btnViewDetails.Size = new Size(100, 30);
+        btnViewDetails.TabIndex = 6;
+        btnViewDetails.Text = "View Details";
+        btnViewDetails.UseVisualStyleBackColor = true;
+        btnViewDetails.Click += BtnViewDetails_Click;
+        // 
+        // txtSearch
+        // 
+        txtSearch.Location = new Point(63, 12);
+        txtSearch.Name = "txtSearch";
+        txtSearch.Size = new Size(300, 27);
+        txtSearch.TabIndex = 1;
+        // 
+        // btnSearch
+        // 
+        btnSearch.Location = new Point(369, 12);
+        btnSearch.Name = "btnSearch";
+        btnSearch.Size = new Size(75, 27);
+        btnSearch.TabIndex = 2;
+        btnSearch.Text = "Search";
+        btnSearch.UseVisualStyleBackColor = true;
+        btnSearch.Click += BtnSearch_Click;
+        // 
+        // lblSearch
+        // 
+        lblSearch.AutoSize = true;
+        lblSearch.Location = new Point(12, 15);
+        lblSearch.Name = "lblSearch";
+        lblSearch.Size = new Size(56, 20);
+        lblSearch.TabIndex = 0;
+        lblSearch.Text = "Search:";
         // 
         // PatientListForm
         // 
-        this.Controls.Add(this.dataGridViewPatients);
-        this.Controls.Add(this.btnViewDetails);
-        this.Controls.Add(this.btnDelete);
-        this.Controls.Add(this.btnEdit);
-        this.Controls.Add(this.btnAdd);
-        this.Controls.Add(this.btnSearch);
-        this.Controls.Add(this.txtSearch);
-        this.Controls.Add(this.lblSearch);
-        this.Name = "PatientListForm";
-        this.Size = new Size(1200, 700);
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPatients)).EndInit();
-        this.ResumeLayout(false);
-        this.PerformLayout();
+        Controls.Add(dataGridViewPatients);
+        Controls.Add(btnViewDetails);
+        Controls.Add(btnDelete);
+        Controls.Add(btnEdit);
+        Controls.Add(btnAdd);
+        Controls.Add(btnSearch);
+        Controls.Add(txtSearch);
+        Controls.Add(lblSearch);
+        Name = "PatientListForm";
+        Size = new Size(1200, 700);
+        ((System.ComponentModel.ISupportInitialize)dataGridViewPatients).EndInit();
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     public void LoadPatients(MedicalContext context)

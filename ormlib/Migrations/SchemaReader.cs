@@ -52,6 +52,9 @@ internal static class SchemaReader
 
     private static TableSnapshot? ReadTableSchema(NpgsqlConnection connection, string tableName)
     {
+        // First, read foreign key constraints for this table
+        var foreignKeys = ReadForeignKeys(connection, tableName);
+
         // Query to get column information
         var columnsQuery = @"
             SELECT 
@@ -106,12 +109,23 @@ internal static class SchemaReader
             // Format data type with length/precision/scale
             var fullDataType = FormatDataType(dataType, maxLength, precision, scale);
 
+            // Look up FK info for this column
+            string? referencedTable = null;
+            string? referencedColumn = null;
+            if (foreignKeys.TryGetValue(columnName, out var fkInfo))
+            {
+                referencedTable = fkInfo.ReferencedTable;
+                referencedColumn = fkInfo.ReferencedColumn;
+            }
+
             columns.Add(new ColumnSnapshot(
                 columnName,
                 fullDataType,
                 isNullable,
                 isUnique,
-                defaultValue));
+                defaultValue,
+                referencedTable,
+                referencedColumn));
 
             if (isPrimaryKey)
             {
@@ -123,6 +137,46 @@ internal static class SchemaReader
             return null;
 
         return new TableSnapshot(tableName, columns, primaryKeyColumn);
+    }
+
+    /// <summary>
+    /// Reads foreign key constraints for a given table.
+    /// Returns a dictionary mapping column name to (referenced table, referenced column).
+    /// </summary>
+    private static Dictionary<string, (string ReferencedTable, string ReferencedColumn)> ReadForeignKeys(
+        NpgsqlConnection connection, string tableName)
+    {
+        var result = new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase);
+
+        var fkQuery = @"
+            SELECT
+                kcu.column_name,
+                ccu.table_name AS referenced_table,
+                ccu.column_name AS referenced_column
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name
+                AND tc.table_schema = kcu.table_schema
+            JOIN information_schema.constraint_column_usage ccu
+                ON tc.constraint_name = ccu.constraint_name
+                AND tc.table_schema = ccu.table_schema
+            WHERE tc.constraint_type = 'FOREIGN KEY'
+            AND tc.table_schema = 'public'
+            AND tc.table_name = @tableName";
+
+        using var command = new NpgsqlCommand(fkQuery, connection);
+        command.Parameters.AddWithValue("@tableName", tableName);
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var columnName = reader.GetString(0);
+            var referencedTable = reader.GetString(1);
+            var referencedColumn = reader.GetString(2);
+            result[columnName] = (referencedTable, referencedColumn);
+        }
+
+        return result;
     }
 
     private static string FormatDataType(string dataType, int? maxLength, int? precision, int? scale)
@@ -138,8 +192,8 @@ internal static class SchemaReader
                     : "DECIMAL",
             "DOUBLE PRECISION" => "FLOAT",
             "BIGINT" => "BIGINT", // Keep as BIGINT (BIGSERIAL is stored as BIGINT in information_schema)
-            "TIMESTAMP WITHOUT TIME ZONE" => "TIMESTAMP WITHOUT TIMEZONE",
-            "TIMESTAMP WITH TIME ZONE" => "TIMESTAMP WITH TIMEZONE",
+            "TIMESTAMP WITHOUT TIME ZONE" => "TIMESTAMP WITHOUT TIME ZONE",
+            "TIMESTAMP WITH TIME ZONE" => "TIMESTAMP WITH TIME ZONE",
             _ => dataType.ToUpper()
         };
     }

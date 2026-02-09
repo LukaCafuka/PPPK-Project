@@ -98,6 +98,21 @@ public sealed class ColumnSnapshot
     public string? DefaultValue { get; }
 
     /// <summary>
+    /// Gets the referenced table name for a foreign key column, or null if not a foreign key.
+    /// </summary>
+    public string? ReferencedTable { get; }
+
+    /// <summary>
+    /// Gets the referenced column name for a foreign key column, or null if not a foreign key.
+    /// </summary>
+    public string? ReferencedColumn { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this column is a foreign key.
+    /// </summary>
+    public bool IsForeignKey => ReferencedTable != null && ReferencedColumn != null;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ColumnSnapshot"/> class.
     /// </summary>
     public ColumnSnapshot(
@@ -105,13 +120,17 @@ public sealed class ColumnSnapshot
         string dataType,
         bool isNullable,
         bool isUnique = false,
-        string? defaultValue = null)
+        string? defaultValue = null,
+        string? referencedTable = null,
+        string? referencedColumn = null)
     {
         ColumnName = columnName ?? throw new ArgumentNullException(nameof(columnName));
         DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
         IsNullable = isNullable;
         IsUnique = isUnique;
         DefaultValue = defaultValue;
+        ReferencedTable = referencedTable;
+        ReferencedColumn = referencedColumn;
     }
 }
 

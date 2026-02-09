@@ -100,6 +100,13 @@ public static class SqlGenerator
             }
         }
 
+        if (column.ForeignKeyMetadata != null &&
+            !string.IsNullOrEmpty(column.ForeignKeyMetadata.ReferencedTableName) &&
+            !string.IsNullOrEmpty(column.ForeignKeyMetadata.ReferencedColumnName))
+        {
+            constraints.Add($"REFERENCES \"{column.ForeignKeyMetadata.ReferencedTableName}\"(\"{column.ForeignKeyMetadata.ReferencedColumnName}\")");
+        }
+
         if (constraints.Count > 0)
         {
             sb.Append(" ");

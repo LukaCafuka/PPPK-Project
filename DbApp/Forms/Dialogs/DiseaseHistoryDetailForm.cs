@@ -25,6 +25,7 @@ public partial class DiseaseHistoryDetailForm : Form
         _history = history;
         _context = context;
         InitializeComponent();
+        this.Text = _history == null ? "Add Disease History" : "Edit Disease History";
         LoadPatientComboBox();
         LoadDiseaseHistoryData();
     }
@@ -158,7 +159,7 @@ public partial class DiseaseHistoryDetailForm : Form
         this.MinimizeBox = false;
         this.Name = "DiseaseHistoryDetailForm";
         this.StartPosition = FormStartPosition.CenterParent;
-        this.Text = _history == null ? "Add Disease History" : "Edit Disease History";
+        this.Text = "DiseaseHistoryDetailForm";
         this.ResumeLayout(false);
         this.PerformLayout();
     }

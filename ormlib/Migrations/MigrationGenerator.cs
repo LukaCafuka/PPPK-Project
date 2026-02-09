@@ -165,6 +165,14 @@ public static class MigrationGenerator
             }
         }
 
+        // Add FOREIGN KEY reference constraint
+        if (column.ForeignKeyMetadata != null &&
+            !string.IsNullOrEmpty(column.ForeignKeyMetadata.ReferencedTableName) &&
+            !string.IsNullOrEmpty(column.ForeignKeyMetadata.ReferencedColumnName))
+        {
+            sql.Append($" REFERENCES \"{column.ForeignKeyMetadata.ReferencedTableName}\"(\"{column.ForeignKeyMetadata.ReferencedColumnName}\")");
+        }
+
         sql.Append(";");
         return sql.ToString();
     }
@@ -248,8 +256,60 @@ public static class MigrationGenerator
             }
         }
 
-        // Note: UNIQUE constraints are not compared here as they require DROP/ADD CONSTRAINT operations
-        // which are more complex. For now, we only compare column-level properties.
+        // Compare FOREIGN KEY constraints
+        var currentHasFk = currentColumn.IsForeignKey;
+        var targetHasFk = targetColumn.IsForeignKey &&
+                          targetColumn.ForeignKeyMetadata != null &&
+                          !string.IsNullOrEmpty(targetColumn.ForeignKeyMetadata.ReferencedTableName) &&
+                          !string.IsNullOrEmpty(targetColumn.ForeignKeyMetadata.ReferencedColumnName);
+
+        var targetRefTable = targetHasFk ? targetColumn.ForeignKeyMetadata!.ReferencedTableName : null;
+        var targetRefColumn = targetHasFk ? targetColumn.ForeignKeyMetadata!.ReferencedColumnName : null;
+
+        var currentRefTable = currentHasFk ? currentColumn.ReferencedTable : null;
+        var currentRefColumn = currentHasFk ? currentColumn.ReferencedColumn : null;
+
+        var fkChanged = currentHasFk != targetHasFk ||
+                        !string.Equals(currentRefTable, targetRefTable, StringComparison.OrdinalIgnoreCase) ||
+                        !string.Equals(currentRefColumn, targetRefColumn, StringComparison.OrdinalIgnoreCase);
+
+        if (fkChanged)
+        {
+            var constraintName = $"fk_{tableName}_{targetColumn.ColumnName}";
+
+            if (currentHasFk)
+            {
+                // Drop existing FK constraint
+                upStatements.Add($"ALTER TABLE \"{tableName}\" DROP CONSTRAINT IF EXISTS \"{constraintName}\";");
+                downStatements.Add($"ALTER TABLE \"{tableName}\" ADD CONSTRAINT \"{constraintName}\" FOREIGN KEY (\"{targetColumn.ColumnName}\") REFERENCES \"{currentRefTable}\"(\"{currentRefColumn}\");");
+            }
+
+            if (targetHasFk)
+            {
+                // Add new FK constraint
+                upStatements.Add($"ALTER TABLE \"{tableName}\" ADD CONSTRAINT \"{constraintName}\" FOREIGN KEY (\"{targetColumn.ColumnName}\") REFERENCES \"{targetRefTable}\"(\"{targetRefColumn}\");");
+                downStatements.Add($"ALTER TABLE \"{tableName}\" DROP CONSTRAINT IF EXISTS \"{constraintName}\";");
+            }
+        }
+
+        // Compare UNIQUE constraints
+        if (currentColumn.IsUnique != targetColumn.IsUnique)
+        {
+            var constraintName = $"uq_{tableName}_{targetColumn.ColumnName}";
+
+            if (targetColumn.IsUnique)
+            {
+                // Add UNIQUE constraint
+                upStatements.Add($"ALTER TABLE \"{tableName}\" ADD CONSTRAINT \"{constraintName}\" UNIQUE (\"{targetColumn.ColumnName}\");");
+                downStatements.Add($"ALTER TABLE \"{tableName}\" DROP CONSTRAINT IF EXISTS \"{constraintName}\";");
+            }
+            else
+            {
+                // Drop UNIQUE constraint
+                upStatements.Add($"ALTER TABLE \"{tableName}\" DROP CONSTRAINT IF EXISTS \"{constraintName}\";");
+                downStatements.Add($"ALTER TABLE \"{tableName}\" ADD CONSTRAINT \"{constraintName}\" UNIQUE (\"{targetColumn.ColumnName}\");");
+            }
+        }
 
         if (upStatements.Count == 0)
             return (null, null);
@@ -276,6 +336,16 @@ public static class MigrationGenerator
         if (baseType == "INT" || baseType == "INTEGER")
         {
             return "INT";
+        }
+
+        // Normalize timestamp types for comparison
+        if (normalized == "TIMESTAMP WITH TIME ZONE")
+        {
+            return "TIMESTAMP_TZ";
+        }
+        if (normalized == "TIMESTAMP WITHOUT TIME ZONE")
+        {
+            return "TIMESTAMP_NTZ";
         }
         
         return baseType;
@@ -311,8 +381,8 @@ public static class MigrationGenerator
             SqlDataType.Varchar => column.Length.HasValue ? $"VARCHAR({column.Length.Value})" : "VARCHAR",
             SqlDataType.Char => column.Length.HasValue ? $"CHAR({column.Length.Value})" : "CHAR(1)",
             SqlDataType.Text => "TEXT",
-            SqlDataType.TimestampWithTimeZone => "TIMESTAMP WITH TIMEZONE",
-            SqlDataType.TimestampWithoutTimeZone => "TIMESTAMP WITHOUT TIMEZONE",
+            SqlDataType.TimestampWithTimeZone => "TIMESTAMP WITH TIME ZONE",
+            SqlDataType.TimestampWithoutTimeZone => "TIMESTAMP WITHOUT TIME ZONE",
             _ => throw new NotSupportedException($"Unsupported SQL data type: {column.DataType.Value}")
         };
     }

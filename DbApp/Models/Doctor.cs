@@ -22,5 +22,3 @@ public class Doctor
     [Column("specialization", SqlDataType.Varchar)]
     public string Specialization { get; set; } = string.Empty;
 }
-
-

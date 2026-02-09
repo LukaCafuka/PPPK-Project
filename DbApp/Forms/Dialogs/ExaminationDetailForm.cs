@@ -26,6 +26,7 @@ public partial class ExaminationDetailForm : Form
         _examination = examination;
         _context = context;
         InitializeComponent();
+        this.Text = _examination == null ? "Schedule Examination" : "Edit Examination";
         LoadPatientComboBox();
         LoadDoctorComboBox();
         LoadExaminationTypeComboBox();
@@ -34,149 +35,149 @@ public partial class ExaminationDetailForm : Form
 
     private void InitializeComponent()
     {
-        this.cmbPatient = new ComboBox();
-        this.cmbDoctor = new ComboBox();
-        this.cmbExaminationType = new ComboBox();
-        this.dtpScheduledDate = new DateTimePicker();
-        this.txtStatus = new TextBox();
-        this.btnSave = new Button();
-        this.btnCancel = new Button();
-        this.lblPatient = new Label();
-        this.lblDoctor = new Label();
-        this.lblExaminationType = new Label();
-        this.lblScheduledDate = new Label();
-        this.lblStatus = new Label();
-        this.SuspendLayout();
-        // 
-        // lblPatient
-        // 
-        this.lblPatient.AutoSize = true;
-        this.lblPatient.Location = new Point(12, 15);
-        this.lblPatient.Name = "lblPatient";
-        this.lblPatient.Size = new Size(48, 15);
-        this.lblPatient.TabIndex = 0;
-        this.lblPatient.Text = "Patient:";
+        cmbPatient = new ComboBox();
+        cmbDoctor = new ComboBox();
+        cmbExaminationType = new ComboBox();
+        dtpScheduledDate = new DateTimePicker();
+        txtStatus = new TextBox();
+        btnSave = new Button();
+        btnCancel = new Button();
+        lblPatient = new Label();
+        lblDoctor = new Label();
+        lblExaminationType = new Label();
+        lblScheduledDate = new Label();
+        lblStatus = new Label();
+        SuspendLayout();
         // 
         // cmbPatient
         // 
-        this.cmbPatient.DropDownStyle = ComboBoxStyle.DropDownList;
-        this.cmbPatient.Location = new Point(120, 12);
-        this.cmbPatient.Name = "cmbPatient";
-        this.cmbPatient.Size = new Size(300, 23);
-        this.cmbPatient.TabIndex = 1;
-        // 
-        // lblDoctor
-        // 
-        this.lblDoctor.AutoSize = true;
-        this.lblDoctor.Location = new Point(12, 45);
-        this.lblDoctor.Name = "lblDoctor";
-        this.lblDoctor.Size = new Size(45, 15);
-        this.lblDoctor.TabIndex = 2;
-        this.lblDoctor.Text = "Doctor:";
+        cmbPatient.DropDownStyle = ComboBoxStyle.DropDownList;
+        cmbPatient.Location = new Point(147, 12);
+        cmbPatient.Name = "cmbPatient";
+        cmbPatient.Size = new Size(300, 28);
+        cmbPatient.TabIndex = 1;
         // 
         // cmbDoctor
         // 
-        this.cmbDoctor.DropDownStyle = ComboBoxStyle.DropDownList;
-        this.cmbDoctor.Location = new Point(120, 42);
-        this.cmbDoctor.Name = "cmbDoctor";
-        this.cmbDoctor.Size = new Size(300, 23);
-        this.cmbDoctor.TabIndex = 3;
-        // 
-        // lblExaminationType
-        // 
-        this.lblExaminationType.AutoSize = true;
-        this.lblExaminationType.Location = new Point(12, 75);
-        this.lblExaminationType.Name = "lblExaminationType";
-        this.lblExaminationType.Size = new Size(100, 15);
-        this.lblExaminationType.TabIndex = 4;
-        this.lblExaminationType.Text = "Examination Type:";
+        cmbDoctor.DropDownStyle = ComboBoxStyle.DropDownList;
+        cmbDoctor.Location = new Point(147, 42);
+        cmbDoctor.Name = "cmbDoctor";
+        cmbDoctor.Size = new Size(300, 28);
+        cmbDoctor.TabIndex = 3;
         // 
         // cmbExaminationType
         // 
-        this.cmbExaminationType.DropDownStyle = ComboBoxStyle.DropDownList;
-        this.cmbExaminationType.Location = new Point(120, 72);
-        this.cmbExaminationType.Name = "cmbExaminationType";
-        this.cmbExaminationType.Size = new Size(300, 23);
-        this.cmbExaminationType.TabIndex = 5;
-        // 
-        // lblScheduledDate
-        // 
-        this.lblScheduledDate.AutoSize = true;
-        this.lblScheduledDate.Location = new Point(12, 105);
-        this.lblScheduledDate.Name = "lblScheduledDate";
-        this.lblScheduledDate.Size = new Size(90, 15);
-        this.lblScheduledDate.TabIndex = 6;
-        this.lblScheduledDate.Text = "Scheduled Date:";
+        cmbExaminationType.DropDownStyle = ComboBoxStyle.DropDownList;
+        cmbExaminationType.Location = new Point(147, 72);
+        cmbExaminationType.Name = "cmbExaminationType";
+        cmbExaminationType.Size = new Size(300, 28);
+        cmbExaminationType.TabIndex = 5;
         // 
         // dtpScheduledDate
         // 
-        this.dtpScheduledDate.Location = new Point(120, 102);
-        this.dtpScheduledDate.Name = "dtpScheduledDate";
-        this.dtpScheduledDate.Size = new Size(300, 23);
-        this.dtpScheduledDate.TabIndex = 7;
-        this.dtpScheduledDate.Format = DateTimePickerFormat.Custom;
-        this.dtpScheduledDate.CustomFormat = "yyyy-MM-dd HH:mm";
-        this.dtpScheduledDate.ShowUpDown = true;
-        // 
-        // lblStatus
-        // 
-        this.lblStatus.AutoSize = true;
-        this.lblStatus.Location = new Point(12, 135);
-        this.lblStatus.Name = "lblStatus";
-        this.lblStatus.Size = new Size(42, 15);
-        this.lblStatus.TabIndex = 8;
-        this.lblStatus.Text = "Status:";
+        dtpScheduledDate.CustomFormat = "yyyy-MM-dd HH:mm";
+        dtpScheduledDate.Format = DateTimePickerFormat.Custom;
+        dtpScheduledDate.Location = new Point(147, 99);
+        dtpScheduledDate.Name = "dtpScheduledDate";
+        dtpScheduledDate.ShowUpDown = true;
+        dtpScheduledDate.Size = new Size(300, 27);
+        dtpScheduledDate.TabIndex = 7;
         // 
         // txtStatus
         // 
-        this.txtStatus.Location = new Point(120, 132);
-        this.txtStatus.Name = "txtStatus";
-        this.txtStatus.Size = new Size(300, 23);
-        this.txtStatus.TabIndex = 9;
+        txtStatus.Location = new Point(147, 132);
+        txtStatus.Name = "txtStatus";
+        txtStatus.Size = new Size(300, 27);
+        txtStatus.TabIndex = 9;
         // 
         // btnSave
         // 
-        this.btnSave.Location = new Point(264, 170);
-        this.btnSave.Name = "btnSave";
-        this.btnSave.Size = new Size(75, 30);
-        this.btnSave.TabIndex = 10;
-        this.btnSave.Text = "Save";
-        this.btnSave.UseVisualStyleBackColor = true;
-        this.btnSave.Click += BtnSave_Click;
+        btnSave.Location = new Point(215, 170);
+        btnSave.Name = "btnSave";
+        btnSave.Size = new Size(75, 30);
+        btnSave.TabIndex = 10;
+        btnSave.Text = "Save";
+        btnSave.UseVisualStyleBackColor = true;
+        btnSave.Click += BtnSave_Click;
         // 
         // btnCancel
         // 
-        this.btnCancel.Location = new Point(345, 170);
-        this.btnCancel.Name = "btnCancel";
-        this.btnCancel.Size = new Size(75, 30);
-        this.btnCancel.TabIndex = 11;
-        this.btnCancel.Text = "Cancel";
-        this.btnCancel.UseVisualStyleBackColor = true;
-        this.btnCancel.Click += BtnCancel_Click;
+        btnCancel.Location = new Point(296, 170);
+        btnCancel.Name = "btnCancel";
+        btnCancel.Size = new Size(75, 30);
+        btnCancel.TabIndex = 11;
+        btnCancel.Text = "Cancel";
+        btnCancel.UseVisualStyleBackColor = true;
+        btnCancel.Click += BtnCancel_Click;
+        // 
+        // lblPatient
+        // 
+        lblPatient.AutoSize = true;
+        lblPatient.Location = new Point(12, 15);
+        lblPatient.Name = "lblPatient";
+        lblPatient.Size = new Size(57, 20);
+        lblPatient.TabIndex = 0;
+        lblPatient.Text = "Patient:";
+        // 
+        // lblDoctor
+        // 
+        lblDoctor.AutoSize = true;
+        lblDoctor.Location = new Point(12, 45);
+        lblDoctor.Name = "lblDoctor";
+        lblDoctor.Size = new Size(58, 20);
+        lblDoctor.TabIndex = 2;
+        lblDoctor.Text = "Doctor:";
+        // 
+        // lblExaminationType
+        // 
+        lblExaminationType.AutoSize = true;
+        lblExaminationType.Location = new Point(12, 75);
+        lblExaminationType.Name = "lblExaminationType";
+        lblExaminationType.Size = new Size(129, 20);
+        lblExaminationType.TabIndex = 4;
+        lblExaminationType.Text = "Examination Type:";
+        // 
+        // lblScheduledDate
+        // 
+        lblScheduledDate.AutoSize = true;
+        lblScheduledDate.Location = new Point(12, 105);
+        lblScheduledDate.Name = "lblScheduledDate";
+        lblScheduledDate.Size = new Size(117, 20);
+        lblScheduledDate.TabIndex = 6;
+        lblScheduledDate.Text = "Scheduled Date:";
+        // 
+        // lblStatus
+        // 
+        lblStatus.AutoSize = true;
+        lblStatus.Location = new Point(12, 135);
+        lblStatus.Name = "lblStatus";
+        lblStatus.Size = new Size(52, 20);
+        lblStatus.TabIndex = 8;
+        lblStatus.Text = "Status:";
         // 
         // ExaminationDetailForm
         // 
-        this.ClientSize = new Size(450, 210);
-        this.Controls.Add(this.btnCancel);
-        this.Controls.Add(this.btnSave);
-        this.Controls.Add(this.txtStatus);
-        this.Controls.Add(this.lblStatus);
-        this.Controls.Add(this.dtpScheduledDate);
-        this.Controls.Add(this.lblScheduledDate);
-        this.Controls.Add(this.cmbExaminationType);
-        this.Controls.Add(this.lblExaminationType);
-        this.Controls.Add(this.cmbDoctor);
-        this.Controls.Add(this.lblDoctor);
-        this.Controls.Add(this.cmbPatient);
-        this.Controls.Add(this.lblPatient);
-        this.FormBorderStyle = FormBorderStyle.FixedDialog;
-        this.MaximizeBox = false;
-        this.MinimizeBox = false;
-        this.Name = "ExaminationDetailForm";
-        this.StartPosition = FormStartPosition.CenterParent;
-        this.Text = _examination == null ? "Schedule Examination" : "Edit Examination";
-        this.ResumeLayout(false);
-        this.PerformLayout();
+        ClientSize = new Size(461, 210);
+        Controls.Add(btnCancel);
+        Controls.Add(btnSave);
+        Controls.Add(txtStatus);
+        Controls.Add(lblStatus);
+        Controls.Add(dtpScheduledDate);
+        Controls.Add(lblScheduledDate);
+        Controls.Add(cmbExaminationType);
+        Controls.Add(lblExaminationType);
+        Controls.Add(cmbDoctor);
+        Controls.Add(lblDoctor);
+        Controls.Add(cmbPatient);
+        Controls.Add(lblPatient);
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        MaximizeBox = false;
+        MinimizeBox = false;
+        Name = "ExaminationDetailForm";
+        StartPosition = FormStartPosition.CenterParent;
+        Text = "ExaminationDetailForm";
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     private void LoadPatientComboBox()
