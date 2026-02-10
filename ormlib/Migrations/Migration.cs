@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace OrmLib.Migrations;
 
 /// <summary>
@@ -5,6 +7,32 @@ namespace OrmLib.Migrations;
 /// </summary>
 public sealed class Migration
 {
+    /// <summary>
+    /// Serializes this migration to a JSON string for persistence.
+    /// </summary>
+    /// <returns>JSON string containing Id, Name, UpStatements, and DownStatements.</returns>
+    public string ToJson()
+    {
+        var dto = new MigrationDto(Id, Name, UpStatements.ToList(), DownStatements.ToList());
+        return JsonSerializer.Serialize(dto);
+    }
+
+    /// <summary>
+    /// Deserializes a migration from a JSON string.
+    /// </summary>
+    /// <param name="json">JSON string produced by <see cref="ToJson"/>.</param>
+    /// <returns>A new <see cref="Migration"/> instance.</returns>
+    public static Migration FromJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            throw new ArgumentNullException(nameof(json));
+        var dto = JsonSerializer.Deserialize<MigrationDto>(json)
+            ?? throw new InvalidOperationException("Failed to deserialize migration from JSON.");
+        return new Migration(dto.Id, dto.Name, dto.UpStatements, dto.DownStatements);
+    }
+
+    private sealed record MigrationDto(string Id, string Name, List<string> UpStatements, List<string> DownStatements);
+
     /// <summary>
     /// Gets the unique identifier for this migration.
     /// </summary>

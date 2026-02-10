@@ -1,4 +1,4 @@
-﻿using Dbtesting;
+using Dbtesting;
 using Dbtesting.Models;
 using Npgsql;
 using OrmLib.Metadata;
@@ -6,7 +6,7 @@ using OrmLib.Migrations;
 using OrmLib.Sql;
 
 // Connection string
-const string connectionString = "Host=10.0.0.42;Port=5432;Username=algebra;Password=algebruh;Database=algebradb;";
+const string connectionString = "Host=10.0.0.42;Port=5432;Username=algebra;Password=algebruh;Database=migrationtesting;";
 
 if (args.Length == 0)
 {
@@ -88,7 +88,7 @@ static void PrintUsage()
     Console.WriteLine("Commands:");
     Console.WriteLine("  create-table              Create the patient table");
     Console.WriteLine("  drop-table                Drop the patient table");
-    Console.WriteLine("  insert <first> <last> <oib> <dob> <gender> [residence] [permanent]");
+    Console.WriteLine("  insert <first> <last> <oib> <birth_year> <gender> [residence] [permanent]");
     Console.WriteLine("                            Insert a new patient");
     Console.WriteLine("                            Example: insert John Doe 12345678901 1990-01-01 M");
     Console.WriteLine("  find <id>                 Find a patient by ID");
@@ -443,7 +443,13 @@ static async Task ApplyMigrationAsync()
     
     Console.WriteLine($"Applying migration: {migration.Name} (ID: {migration.Id})");
     Console.WriteLine();
-    
+
+    // Persist migration so rollback can load it by ID
+    var migrationsDir = Path.Combine(Directory.GetCurrentDirectory(), "Migrations");
+    Directory.CreateDirectory(migrationsDir);
+    var migrationPath = Path.Combine(migrationsDir, $"{migration.Id}.json");
+    File.WriteAllText(migrationPath, migration.ToJson());
+
     try
     {
         context.Migrations.ExecuteUp(migration);
@@ -488,19 +494,19 @@ static async Task RollbackMigrationAsync(string[] args)
         Console.WriteLine($"ERROR: Migration {migrationId} has not been applied.");
         return;
     }
-    
-    // Generate migration to get the rollback statements
-    // Note: In a real implementation, you'd load the migration from storage
-    // For now, we'll generate it and use the down statements
-    var migration = context.GenerateMigration();
-    
-    if (migration == null || migration.Id != migrationId)
+
+    // Load migration from file (saved at apply time)
+    var migrationsDir = Path.Combine(Directory.GetCurrentDirectory(), "Migrations");
+    var migrationPath = Path.Combine(migrationsDir, $"{migrationId}.json");
+    if (!File.Exists(migrationPath))
     {
         Console.WriteLine($"ERROR: Cannot find migration {migrationId} to rollback.");
-        Console.WriteLine("NOTE: In a production system, migrations are stored and can be loaded by ID.");
+        Console.WriteLine("Migration file not found. Migrations applied before migration storage was implemented cannot be rolled back.");
         return;
     }
-    
+
+    var migration = Migration.FromJson(File.ReadAllText(migrationPath));
+
     try
     {
         context.Migrations.ExecuteDown(migration);

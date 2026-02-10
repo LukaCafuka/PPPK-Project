@@ -7,15 +7,18 @@ namespace Dbtesting;
 public class TestContext : DatabaseContext
 {
     public DbSet<Patient> Patients { get; }
+    public DbSet<Medication> Medications { get; }
 
     public TestContext(string connectionString) : base(connectionString)
     {
         Patients = new DbSet<Patient>(this);
+        Medications = new DbSet<Medication>(this);
     }
 
     protected override IEnumerable<TableMetadata> GetTableMetadata()
     {
         yield return MetadataExtractor.ExtractTableMetadata<Patient>();
+        yield return MetadataExtractor.ExtractTableMetadata<Medication>();
     }
 }
 
